@@ -189,47 +189,25 @@ internal class ConductBoardManager : MonoBehaviour
 
     public async void CheckVersion()
     {
-        string          api        = "https://api.github.com/repos/Seralyth/Utilla/releases/latest";
-        UnityWebRequest webRequest = UnityWebRequest.Get(api);
-
+        UnityWebRequest webRequest = UnityWebRequest.Get(string.Join('/', Constants.InfoRepositoryURL, "Version.txt"));
         UnityWebRequestAsyncOperation asyncOperation = webRequest.SendWebRequest();
         await asyncOperation;
 
         if (webRequest.result != UnityWebRequest.Result.Success)
         {
             Logging.Fatal($"Version could not be accessed from {webRequest.url}");
-            Logging.Info(webRequest.error);
-
+            Logging.Info(webRequest.downloadHandler.error);
             return;
         }
 
-        try
-        {
-            JObject json      = JObject.Parse(webRequest.downloadHandler.text);
-            string  latestTag = json["tag_name"]?.ToString();
+        if (!Version.TryParse(Constants.Version,               out Version installedVersion) ||
+            !Version.TryParse(webRequest.downloadHandler.text, out Version latestVersion)    ||
+            latestVersion <= installedVersion)
+            return;
 
-            if (string.IsNullOrEmpty(latestTag))
-                return;
-
-            if (latestTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
-                latestTag = latestTag.Substring(1);
-
-            if (Version.TryParse(Constants.Version, out Version installedVersion) &&
-                Version.TryParse(latestTag,         out Version latestVersion)    &&
-                latestVersion > installedVersion)
-            {
-                Logging.Message(
-                        $"A new version of Utilla is available: {latestVersion} (installed version: {installedVersion})");
-
-                footerText.color = Color.red;
-                footerText.fontSize *= 0.85f;
-                footerText.text = $"{Constants.Name} {Constants.Version} - please update to {latestVersion}".ToUpper();
-            }
-        }
-        catch (Exception e)
-        {
-            Logging.Fatal($"Failed to get latest version from GitHub: {e.Message}");
-        }
+        footerText.color    =  Color.red;
+        footerText.fontSize *= 0.85f;
+        footerText.text     =  $"{Constants.Name} {Constants.Version} - please update to {latestVersion}".ToUpper();
     }
 
     private async void CreateEntries()
