@@ -27,14 +27,25 @@ public sealed class Events
     /// </summary>
     public static event EventHandler GameInitialized;
 
-    public void TriggerRoomJoin(RoomJoinedArgs e) => RoomJoined?.SafeInvoke(this, e);
+    public void TriggerRoomJoin(RoomJoinedArgs e)
+    {
+        RoomJoined?.SafeInvoke(this, e);
+        GorillaLibraryCompat.InvokeRoomJoined(e.Gamemode ?? string.Empty);
+    }
 
-    public void TriggerRoomLeft(RoomJoinedArgs e) => RoomLeft?.SafeInvoke(this, e);
+    public void TriggerRoomLeft(RoomJoinedArgs e)
+    {
+        RoomLeft?.SafeInvoke(this, e);
+        GorillaLibraryCompat.InvokeRoomLeft(e.Gamemode ?? string.Empty);
+    }
 
     public void TriggerRoomPropertiesUpdated(RoomJoinedArgs e) => RoomPropertiesUpdated?.SafeInvoke(this, e);
 
-    public void TriggerGameInitialized() => GameInitialized?.SafeInvoke(this, EventArgs.Empty);
-
+    public void TriggerGameInitialized()
+    {
+        GameInitialized?.SafeInvoke(this, EventArgs.Empty);
+        GorillaLibraryCompat.InvokeGameInitialized();
+    }
     public class RoomJoinedArgs : EventArgs
     {
         /// <summary>
