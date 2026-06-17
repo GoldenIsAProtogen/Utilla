@@ -22,7 +22,7 @@ public abstract class Constants
 
     public const string RoomKindVanilla = "vanilla";
 
-    [Obsolete("The legal status toggle was removed. This key is kept only so old plugins still compile.")]
+    [Obsolete("The legal status toggle was removed. Leaving this here in-case some other mods use it?")]
     public const string LegalStatusKey = "utilla_legal_status";
 
     internal const string InfoRepositoryURL =
