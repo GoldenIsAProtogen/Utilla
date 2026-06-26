@@ -46,6 +46,7 @@ public sealed class Events
         GameInitialized?.SafeInvoke(this, EventArgs.Empty);
         GorillaLibraryCompat.InvokeGameInitialized();
     }
+
     public class RoomJoinedArgs : EventArgs
     {
         /// <summary>

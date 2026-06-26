@@ -37,7 +37,8 @@ internal static class MatchmakingPropertyPatches
         if (__args == null) return;
 
         foreach (object t in __args)
-            switch (t) {
+            switch (t)
+            {
                 case OpJoinRandomRoomParams joinParams:
                     RoomPropertyUtils.ApplyExpectedMatchmakingProperties(joinParams);
 

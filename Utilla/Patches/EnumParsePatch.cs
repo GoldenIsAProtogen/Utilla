@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using GorillaGameModes;
 using HarmonyLib;
-using Utilla.Models;
 using Utilla.Utils;
 
 namespace Utilla.Patches;

@@ -13,7 +13,7 @@ public static class GameModeUtils
 
     public static Gamemode FindGamemodeInString(string gmString)
     {
-        if (string.IsNullOrEmpty(gmString)) 
+        if (string.IsNullOrEmpty(gmString))
             return null;
 
         if (!gmString.Contains('|'))
@@ -31,9 +31,9 @@ public static class GameModeUtils
 
     public static Gamemode GetGamemode(Func<Gamemode, bool> predicate)
     {
-        if (predicate == null) 
+        if (predicate == null)
             return null;
-        
+
         if (GamemodeManager.HasInstance &&
             GamemodeManager.Instance.Gamemodes.LastOrDefault(predicate) is { } gameMode)
             return gameMode;
@@ -75,6 +75,5 @@ public static class GameModeUtils
         return null;
     }
 
-    public static bool IsSuperGameMode(this GameModeType gameMode) =>
-            gameMode is GameModeType.SuperInfect or GameModeType.SuperCasual;
+    public static bool IsSuperGameMode(this GameModeType gameMode) => gameMode is GameModeType.SuperInfect or GameModeType.SuperCasual;
 }

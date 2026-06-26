@@ -38,8 +38,9 @@ namespace Utilla
     {
         private static readonly List<RegisteredPlugin> RegisteredPlugins = new();
 
-        private static bool                 resolverHooked;
-        private static bool                 initialized;
+        private static bool resolverHooked,
+                            initialized;
+
         private static string               currentGamemode;
         public static  GorillaLibraryCompat Instance { get; private set; }
 
@@ -161,10 +162,7 @@ namespace Utilla
                 InvokeMarkedMethods(plugin.Plugin, plugin.JoinMethods, currentGamemode);
         }
 
-        public static void InvokeRoomLeft()
-        {
-            InvokeRoomLeft(currentGamemode);
-        }
+        public static void InvokeRoomLeft() => InvokeRoomLeft(currentGamemode);
 
         public static void InvokeRoomLeft(string gamemode)
         {
@@ -179,40 +177,22 @@ namespace Utilla
             GameModeUtility.SetCurrentGameMode(null);
         }
 
-        public static void InvokePlayerEnteredRoom(NetPlayer player)
-        {
-            GorillaLibrary.Events.Player.OnPlayerEnteredRoom?.Invoke(player);
-        }
+        public static void InvokePlayerEnteredRoom(NetPlayer player) => GorillaLibrary.Events.Player.OnPlayerEnteredRoom?.Invoke(player);
+        
 
-        public static void InvokePlayerLeftRoom(NetPlayer player)
-        {
-            GorillaLibrary.Events.Player.OnPlayerLeftRoom?.Invoke(player);
-        }
+        public static void InvokePlayerLeftRoom(NetPlayer player) => GorillaLibrary.Events.Player.OnPlayerLeftRoom?.Invoke(player);
 
-        public static void InvokePlayerNameChanged(NetPlayer player, string name)
-        {
-            GorillaLibrary.Events.Player.OnPlayerNameChanged?.Invoke(player, name);
-        }
+        public static void InvokePlayerNameChanged(NetPlayer player, string name) => GorillaLibrary.Events.Player.OnPlayerNameChanged?.Invoke(player, name);
 
-        public static void InvokeRigAdded(VRRig rig, NetPlayer player)
-        {
-            GorillaLibrary.Events.Rig.OnRigAdded?.Invoke(rig, player);
-        }
+        public static void InvokeRigAdded(VRRig rig, NetPlayer player) => GorillaLibrary.Events.Rig.OnRigAdded?.Invoke(rig, player);
 
-        public static void InvokeRigRemoved(VRRig rig)
-        {
-            GorillaLibrary.Events.Rig.OnRigRemoved?.Invoke(rig);
-        }
+        public static void InvokeRigRemoved(VRRig rig) => GorillaLibrary.Events.Rig.OnRigRemoved?.Invoke(rig);
 
-        public static void InvokeRigColourChanged(VRRig rig, Color colour)
-        {
-            GorillaLibrary.Events.Rig.OnColourChanged?.Invoke(rig, colour);
-        }
+        public static void InvokeRigColourChanged(VRRig rig, Color colour) => GorillaLibrary.Events.Rig.OnColourChanged?.Invoke(rig, colour);
+        
 
-        public static void InvokeGameOverlayActivation(bool active)
-        {
-            GorillaLibrary.Events.Player.OnGameOverlayActivation?.Invoke(active);
-        }
+        public static void InvokeGameOverlayActivation(bool active) => GorillaLibrary.Events.Player.OnGameOverlayActivation?.Invoke(active);
+        
 
         private static List<MethodInfo> GetMarkedMethods(Type type, Type attributeType)
         {
@@ -809,7 +789,7 @@ namespace GorillaLibrary.Extensions
                 return;
 
             TaskCompletionSource<CustomYieldInstruction> completionSource = new();
-            IEnumerator                                  coroutine = AwaitableRoutine(instruction, completionSource);
+            IEnumerator                                  coroutine        = AwaitableRoutine(instruction, completionSource);
 
             behaviour.StartCoroutine(coroutine);
             await completionSource.Task;
@@ -954,9 +934,9 @@ namespace GorillaLibrary.Extensions
             return limitLength ? playerName.LimitLength(12) : playerName;
         }
 
-        public static GetAccountInfoResult GetAccountInfo(this NetPlayer netPlayer,
+        public static GetAccountInfoResult GetAccountInfo(this NetPlayer               netPlayer,
                                                           Action<GetAccountInfoResult> callback,
-                                                          double maxCacheTime = double.MaxValue) =>
+                                                          double                       maxCacheTime = double.MaxValue) =>
                 PlayerUtility.GetAccountInfo(netPlayer.UserId, callback, maxCacheTime);
 
         public static DateTime GetAccountCreation(this NetPlayer netPlayer, Action<DateTime> callback,
@@ -1053,7 +1033,7 @@ namespace GorillaLibrary.Extensions
             }
         }
 
-        public static void GetCosmetics(this VRRig rig, out CosmeticsController.CosmeticSet currentWornSet,
+        public static void GetCosmetics(this VRRig                           rig, out CosmeticsController.CosmeticSet currentWornSet,
                                         out  CosmeticsController.CosmeticSet tryOnSet)
         {
             currentWornSet = rig.cosmeticSet;

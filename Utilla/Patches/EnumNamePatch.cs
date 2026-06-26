@@ -24,6 +24,5 @@ public class EnumNamePatch
         __result = GameModeUtils.GetGameModeInstance(e).GameTypeName();
 
         return false;
-
     }
 }

@@ -20,16 +20,16 @@ namespace Utilla.Behaviours;
 internal class GamemodeManager : MonoBehaviour
 {
     public readonly Dictionary<GameModeType, Gamemode> DefaultGameModesPerMode = [];
-    public readonly Dictionary<GameModeType, Gamemode> ModdedGamemodesPerMode  = [];
+
+    public readonly List<PluginInfo>                   invokedMods            = [];
+    public readonly Dictionary<GameModeType, Gamemode> ModdedGamemodesPerMode = [];
     private         GameObject                         customGameModeContainer;
 
     // Custom game modes
-    public List<Gamemode> CustomGameModes;
-
-    public readonly List<PluginInfo> invokedMods = [];
-    internal        List<PluginInfo> pluginInfos;
-    public static   GamemodeManager  Instance    { get; private set; }
-    public static   bool             HasInstance => Instance != null;
+    public        List<Gamemode>   CustomGameModes;
+    internal      List<PluginInfo> pluginInfos;
+    public static GamemodeManager  Instance    { get; private set; }
+    public static bool             HasInstance => Instance != null;
 
     public static TaskCompletionSource<GamemodeManager> Initialization { get; } = new();
 

@@ -30,8 +30,10 @@ internal class UtillaGamemodeSelector : MonoBehaviour
 
     public readonly Dictionary<bool, List<Gamemode>> SelectorGameModes = [];
 
-    public bool Active => isActiveAndEnabled                                     && ZoneManagement.instance != null &&
-                          ZoneManagement.instance.activeZones is { } activeZones && activeZones.Contains(Zone);
+    public bool Active => isActiveAndEnabled &&
+                          ZoneManagement.instance != null &&
+                          ZoneManagement.instance.activeZones is { } activeZones &&
+                          activeZones.Contains(Zone);
 
     public async void Awake()
     {
@@ -278,13 +280,13 @@ internal class UtillaGamemodeSelector : MonoBehaviour
             if (tmpText)
             {
                 tmpText.gameObject.SetActive(true);
-                tmpText.enabled = true;
-                tmpText.transform.localPosition = Vector3.forward * 0.525f;
-                tmpText.transform.localEulerAngles = Vector3.up * 180f;
-                tmpText.transform.localScale = Vector3.Scale(tmpText.transform.localScale, new Vector3(0.5f, 0.5f, 1));
-                tmpText.text = text;
-                tmpText.color = Color.black;
-                tmpText.horizontalAlignment = HorizontalAlignmentOptions.Center;
+                tmpText.enabled                    = true;
+                tmpText.transform.localPosition    = Vector3.forward * 0.525f;
+                tmpText.transform.localEulerAngles = Vector3.up      * 180f;
+                tmpText.transform.localScale       = Vector3.Scale(tmpText.transform.localScale, new Vector3(0.5f, 0.5f, 1));
+                tmpText.text                       = text;
+                tmpText.color                      = Color.black;
+                tmpText.horizontalAlignment        = HorizontalAlignmentOptions.Center;
                 if (tmpText.TryGetComponent(out StaticLodGroup group)) Destroy(group);
             }
             else if (button.GetComponentInChildren<Text>() is { } buttonText)

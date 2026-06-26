@@ -21,8 +21,7 @@ public static class UtillaAPI
 
     public static bool IsInUtillaRoom => GameModeUtils.CurrentRoomHasUtillaGamemode();
 
-    public static bool TryGetGamemode(string id, out Gamemode gamemode) =>
-            GameModeUtils.TryGetGamemode(id, out gamemode);
+    public static bool TryGetGamemode(string id, out Gamemode gamemode) => GameModeUtils.TryGetGamemode(id, out gamemode);
 
     public static bool IsRegisteredGamemode(string id) => RoomPropertyUtils.IsRegisteredUtillaGamemode(id);
 

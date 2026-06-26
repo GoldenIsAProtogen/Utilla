@@ -17,8 +17,7 @@ public static class RoomPropertyUtils
 
     private static readonly string[] LobbyPropertyKeys = [GamemodeKey, BaseGamemodeKey, RoomKindKey,];
 
-    public static string SelectedGamemodeId =>
-            GorillaComputer.instance?.currentGameMode?.Value ?? nameof(GameModeType.Infection);
+    public static string SelectedGamemodeId => GorillaComputer.instance?.currentGameMode?.Value ?? nameof(GameModeType.Infection);
 
     public static Gamemode SelectedGamemode => GameModeUtils.GetGamemodeFromId(SelectedGamemodeId);
 
@@ -26,10 +25,10 @@ public static class RoomPropertyUtils
 
     public static bool IsRegisteredUtillaGamemode(string id)
     {
-        if (string.IsNullOrEmpty(id)) 
+        if (string.IsNullOrEmpty(id))
             return false;
-        
-        if (Enum.IsDefined(typeof(GameModeType), id)) 
+
+        if (Enum.IsDefined(typeof(GameModeType), id))
             return false;
 
         return GameModeUtils.GetGamemodeFromId(id) != null;
@@ -37,15 +36,15 @@ public static class RoomPropertyUtils
 
     public static string GetNetworkGameModeId(string id)
     {
-        if (string.IsNullOrEmpty(id)) 
+        if (string.IsNullOrEmpty(id))
             return nameof(GameModeType.Infection);
-        
-        if (Enum.IsDefined(typeof(GameModeType), id)) 
+
+        if (Enum.IsDefined(typeof(GameModeType), id))
             return id;
 
         Gamemode gamemode = GameModeUtils.GetGamemodeFromId(id);
 
-        if (gamemode?.BaseGamemode is { } baseMode) 
+        if (gamemode?.BaseGamemode is { } baseMode)
             return baseMode.ToString();
 
         return nameof(GameModeType.Infection);
@@ -73,7 +72,7 @@ public static class RoomPropertyUtils
 
     public static string ReadString(Hashtable properties, string key)
     {
-        if (properties == null || string.IsNullOrEmpty(key)) 
+        if (properties == null || string.IsNullOrEmpty(key))
             return string.Empty;
 
         return properties.TryGetValue(key, out object value) ? value as string ?? string.Empty : string.Empty;
@@ -84,7 +83,7 @@ public static class RoomPropertyUtils
 
     public static bool CurrentRoomMatchesSelectedUtillaGamemode()
     {
-        if (!IsUtillaSelectedGamemode) 
+        if (!IsUtillaSelectedGamemode)
             return true;
 
         return ReadString(PhotonNetwork.CurrentRoom?.CustomProperties, GamemodeKey) == SelectedGamemodeId;
@@ -92,7 +91,7 @@ public static class RoomPropertyUtils
 
     public static void ApplyExpectedMatchmakingProperties(OpJoinRandomRoomParams joinParams)
     {
-        if (joinParams == null || !IsUtillaSelectedGamemode) 
+        if (joinParams == null || !IsUtillaSelectedGamemode)
             return;
 
         joinParams.ExpectedCustomRoomProperties              ??= new Hashtable();
@@ -101,7 +100,7 @@ public static class RoomPropertyUtils
 
     public static void ApplyRoomCreationProperties(EnterRoomParams enterParams)
     {
-        if (enterParams == null) 
+        if (enterParams == null)
             return;
 
         enterParams.RoomOptions ??= new RoomOptions();
@@ -124,13 +123,13 @@ public static class RoomPropertyUtils
 
     public static bool ApplySelectedGamemodeToCurrentRoom()
     {
-        if (!PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom == null) 
+        if (!PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom == null)
             return false;
 
-        if (HasUtillaGamemodeProperty(PhotonNetwork.CurrentRoom.CustomProperties)) 
+        if (HasUtillaGamemodeProperty(PhotonNetwork.CurrentRoom.CustomProperties))
             return false;
-        
-        if (!PhotonNetwork.IsMasterClient) 
+
+        if (!PhotonNetwork.IsMasterClient)
             return false;
 
         string selected           = SelectedGamemodeId;
@@ -149,7 +148,7 @@ public static class RoomPropertyUtils
 
     private static string[] MergeLobbyKeys(string[] existing)
     {
-        if (existing == null || existing.Length == 0) 
+        if (existing == null || existing.Length == 0)
             return LobbyPropertyKeys.ToArray();
 
         return existing.Concat(LobbyPropertyKeys).Where(key => !string.IsNullOrEmpty(key)).Distinct().ToArray();

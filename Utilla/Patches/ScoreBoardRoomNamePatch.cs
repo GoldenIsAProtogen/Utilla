@@ -18,6 +18,5 @@ internal class ScoreBoardRoomNamePatch
         __result = gamemode.DisplayName.ToUpper();
 
         return false;
-
     }
 }

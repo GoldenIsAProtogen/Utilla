@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,14 +8,12 @@ using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Bootstrap;
 using GorillaTag;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 using Utilla.Attributes;
-using Utilla.Tools;
 
 namespace Utilla.Behaviours;
 
@@ -42,15 +39,10 @@ internal class ConductBoardManager : MonoBehaviour
         stumpRootObject  = Array.Find(ZoneManagement.instance.allObjects, gameObject => gameObject.name == "TreeRoom");
         conductTransform = stumpRootObject.transform.FindChildRecursive("code of conduct");
 
-        baseHeaderText = stumpRootObject.transform.FindChildRecursive("CodeOfConductHeadingText")
-                                       ?.GetComponent<TextMeshPro>();
+        baseHeaderText = stumpRootObject.transform.FindChildRecursive("CodeOfConductHeadingText")?.GetComponent<TextMeshPro>();
 
         if (baseHeaderText == null)
-        {
-            Logging.Warning("COC (Code of Conduct) header text is missing");
-
             return;
-        }
 
         GameObject headingTextObject = Instantiate(baseHeaderText.gameObject);
         headingTextObject.transform.position   = baseHeaderText.transform.position;
@@ -79,12 +71,9 @@ internal class ConductBoardManager : MonoBehaviour
         footerText.renderer.enabled = true;
 
         baseBodyText = stumpRootObject.transform.FindChildRecursive("COCBodyText")?.GetComponent<TextMeshPro>();
-        if (baseBodyText == null)
-        {
-            Logging.Warning("COC (Code of Conduct) body text is missing");
 
+        if (baseBodyText == null)
             return;
-        }
 
         GameObject bodyTextObject = Instantiate(baseBodyText.gameObject);
         bodyTextObject.transform.position   = baseBodyText.transform.position;
@@ -99,12 +88,9 @@ internal class ConductBoardManager : MonoBehaviour
         bodyText.margin           = new Vector4(0f, 0f, 0f, 36f);
         bodyText.richText         = true;
 
-        boardContent.Insert(0, new Section());
-
         CreateConductButton(-1f, "-->", NextPage);
         CreateConductButton(1f,  "<--", PrevPage);
 
-        ShowPage();
         CheckVersion();
         CreateEntries();
     }
@@ -189,25 +175,20 @@ internal class ConductBoardManager : MonoBehaviour
 
     public async void CheckVersion()
     {
-        UnityWebRequest webRequest = UnityWebRequest.Get(string.Join('/', Constants.InfoRepositoryURL, "Version.txt"));
+        UnityWebRequest               webRequest     = UnityWebRequest.Get(string.Join('/', Constants.InfoRepositoryURL, "Version.txt"));
         UnityWebRequestAsyncOperation asyncOperation = webRequest.SendWebRequest();
         await asyncOperation;
 
         if (webRequest.result != UnityWebRequest.Result.Success)
-        {
-            Logging.Fatal($"Version could not be accessed from {webRequest.url}");
-            Logging.Info(webRequest.downloadHandler.error);
             return;
-        }
 
         if (!Version.TryParse(Constants.Version,               out Version installedVersion) ||
             !Version.TryParse(webRequest.downloadHandler.text, out Version latestVersion)    ||
             latestVersion <= installedVersion)
             return;
 
-        footerText.color    =  Color.red;
         footerText.fontSize *= 0.85f;
-        footerText.text     =  $"{Constants.Name} {Constants.Version} - please update to {latestVersion}".ToUpper();
+        footerText.text     =  $"{Constants.Name} <color=#ff0000>{Constants.Version}</color> - please update to <color=#00ff00>{latestVersion}</color>".ToUpper();
     }
 
     private async void CreateEntries()
@@ -233,7 +214,7 @@ internal class ConductBoardManager : MonoBehaviour
 
                 if (names.SingleOrDefault(resourceName => resourceName == attribute.Text) is string resourceName)
                 {
-                    await using Stream       stream       = assembly.GetManifestResourceStream(resourceName);
+                    await using Stream stream       = assembly.GetManifestResourceStream(resourceName);
                     using StreamReader reader       = new(stream);
                     string             resourceText = await reader.ReadToEndAsync();
                     boardContent.Add(new Section(attribute.Title, resourceText));
@@ -254,34 +235,44 @@ internal class ConductBoardManager : MonoBehaviour
         UnityWebRequestAsyncOperation asyncOperation = webRequest.SendWebRequest();
         await asyncOperation;
 
+        Section? mainEntry = null;
+
         if (webRequest.result == UnityWebRequest.Result.Success)
-        {
             foreach (JObject item in JArray.Parse(webRequest.downloadHandler.text).Cast<JObject>())
             {
-                Logging.Message(item.ToString(Formatting.Indented));
+                string title   = (string)item.Property("title")?.Value;
+                string bodyUrl = (string)item.Property("body")?.Value;
+                bool   isMain  = (bool?)item.Property("isMain")?.Value ?? false;
 
-                using UnityWebRequest webRequest2 = UnityWebRequest.Get(string.Join('/', Constants.InfoRepositoryURL,
-                        (string)item.Property("body")?.Value));
+                if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(bodyUrl))
+                    continue;
+
+                using UnityWebRequest webRequest2 = UnityWebRequest.Get(string.Join('/', Constants.InfoRepositoryURL, bodyUrl));
 
                 asyncOperation = webRequest2.SendWebRequest();
                 await asyncOperation;
 
                 if (webRequest2.result != UnityWebRequest.Result.Success)
-                {
-                    Logging.Fatal($"Body text could not be accessed from {webRequest2.url}");
-                    Logging.Error(webRequest.downloadHandler.error);
-
                     continue;
-                }
 
-                boardContent.Add(new Section((string)item.Property("title")?.Value, webRequest2.downloadHandler.text));
+                Section section = new(title, webRequest2.downloadHandler.text);
+
+                if (isMain)
+                    mainEntry = section;
+                else
+                    boardContent.Add(section);
             }
-        }
+
+        // ignored
+        if (mainEntry.HasValue)
+            boardContent.Insert(0, mainEntry.Value);
         else
-        {
-            Logging.Fatal($"ModData could not be accessed from {webRequest.url}");
-            Logging.Info(webRequest.downloadHandler.error);
-        }
+            boardContent.Insert(0, new Section(
+                    baseHeaderText?.text ?? "CODE OF CONDUCT",
+                    baseBodyText?.text   ?? ""
+            ));
+
+        ShowPage();
     }
 
     private IEnumerator ButtonColourUpdate(GorillaPressableButton pressableButton)
@@ -300,12 +291,12 @@ internal class ConductBoardManager : MonoBehaviour
 
     private void SanitizeTextObject(GameObject gameObject)
     {
-        Type[] typesToRemove = [typeof(PlayFabTitleDataTextDisplay), typeof(LocalizedText), typeof(StaticLodGroup),];
-        Component[] components = gameObject.GetComponents<Component>();
+        Type[]      typesToRemove = [typeof(PlayFabTitleDataTextDisplay), typeof(LocalizedText), typeof(StaticLodGroup),];
+        Component[] components    = gameObject.GetComponents<Component>();
 
         foreach (Component t in components)
         {
-            Type      type = t.GetType();
+            Type type = t.GetType();
             if (typesToRemove.Contains(type)) Destroy(t);
         }
     }

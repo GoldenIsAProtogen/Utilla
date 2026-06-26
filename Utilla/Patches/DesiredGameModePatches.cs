@@ -44,12 +44,11 @@ internal class DesiredGameModePatches
         __result = networkMode;
 
         return false;
-
     }
 
     [HarmonyPatch(nameof(GorillaNetworkJoinTrigger.GetDesiredGameTypeLocalized))]
     [HarmonyPrefix]
     public static bool DesiredLocalizedGameTypePatch(GorillaNetworkJoinTrigger __instance, ref string __result,
-                                                     ref GTZone ___zone) => DesiredGameTypePatch(__instance,
+                                                     ref GTZone                ___zone) => DesiredGameTypePatch(__instance,
             ref __result, ref ___zone);
 }

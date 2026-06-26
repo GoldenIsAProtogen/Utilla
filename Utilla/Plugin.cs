@@ -24,10 +24,9 @@ internal class Plugin : BaseUnityPlugin
 
     public void OnGameInitialized(object sender, EventArgs args)
     {
-        Logger.LogInfo(
-                $"Utilla v{Constants.Version}, presented to you by: legoandmars, developer9998, Seralyth Software, and ZlothY.");
+        Logger.LogInfo($"Utilla v{Constants.Version}, presented to you by: legoandmars, developer9998, Seralyth Software, and ZlothY.");
 
-        DontDestroyOnLoad(new GameObject($"{Constants.Name} {Constants.Version}", typeof(UtillaNetworkController),
-                typeof(GamemodeManager), typeof(ConductBoardManager)));
+        DontDestroyOnLoad(new GameObject($"{Constants.Name} {Constants.Version}",
+                typeof(UtillaNetworkController), typeof(GamemodeManager), typeof(ConductBoardManager)));
     }
 }
