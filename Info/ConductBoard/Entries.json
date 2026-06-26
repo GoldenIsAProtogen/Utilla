@@ -1,10 +1,11 @@
 [
   {
-    "title": "CHEATING",
-    "body": "ConductBoard/Cheating.txt"
+    "title": "CODE OF CONDUCT",
+    "body": "ConductBoard/COC.txt",
+    "isMain": true
   },
   {
-    "title": "CHECKERS",
-    "body": "ConductBoard/Harassment.txt"
+    "title": "CHEATING",
+    "body": "ConductBoard/Cheating.txt"
   }
 ]
