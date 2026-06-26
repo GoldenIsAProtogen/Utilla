@@ -1,5 +1,10 @@
 [
   {
+    "title": "CODE OF CONDUCT",
+    "body": "ConductBoard/COC.txt",
+    "isMain": true
+  },
+  {
     "title": "CHEATING",
     "body": "ConductBoard/Cheating.txt"
   }
